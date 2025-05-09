@@ -83,7 +83,7 @@ pipeline{
 //         }
         stage("Sonarqube Analysis "){
             steps{
-                withSonarQubeEnv('sonar-server') {
+                withSonarQubeEnv('desigan-sonar-server') {
                     sh ''' mvn sonar:sonar \
                     -Dsonar.projectName=desigan-acn-upskills \
                     -Dsonar.java.binaries=. \
