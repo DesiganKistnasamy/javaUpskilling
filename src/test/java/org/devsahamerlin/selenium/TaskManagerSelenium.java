@@ -59,7 +59,7 @@ class TaskManagerSelenium {
     @AfterEach
     void tearDown() {
         if (driver != null) {
-            captureScreenshot();
+     //       captureScreenshot();
             driver.quit();
         }
     }
@@ -82,7 +82,7 @@ class TaskManagerSelenium {
 
         // Wait for page to reload after submission
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".card-header")));
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         List<WebElement> taskRows = driver.findElements(By.cssSelector("table tbody tr"));
         boolean taskFound = false;

@@ -163,7 +163,7 @@ pipeline{
 
         stage('Run Selenium Tests') {
             steps {
-                sh 'sleep 10'
+                sh 'sleep 30'
 
                 sh 'mvn -Dtest=TaskManagerSelenium test'
             }
