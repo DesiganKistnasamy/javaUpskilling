@@ -153,8 +153,8 @@ pipeline{
         stage ('Deploy to container'){
             steps{
                 sh """
-                    sudo docker ps -a --filter name=tasksmanager -q | xargs -r sudo docker stop
-                    sudo docker ps -a --filter name=tasksmanager -q | xargs -r sudo docker rm -f
+                    sudo docker ps -a --filter name=desigan-tasksmanager -q | xargs -r sudo docker stop
+                    sudo docker ps -a --filter name=desigan-tasksmanager -q | xargs -r sudo docker rm -f
                     sudo docker images desigan12/tasksmanager -q | xargs -r sudo docker rmi -f
                     sudo docker run -d --name desigan-tasksmanager -p 8087:8082 desigan12/tasksmanager:${BUILD_NUMBER}
                 """
