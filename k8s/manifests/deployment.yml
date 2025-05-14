@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tasksmanager-app
+  name: desigan-tasksmanager-app
   labels:
-    app: tasksmanager-app
+    app: desigan-tasksmanager-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: tasksmanager-app
+      app: desigan-tasksmanager-app
   template:
     metadata:
       labels:
-        app: tasksmanager-app
+        app: desigan-tasksmanager-app
     spec:
       containers:
-        - name: tasksmanager-app
-          image: devsahamerlin/tasksmanager:latest
+        - name: desigan-tasksmanager-app
+          image: desigan12/tasksmanager:latest
           ports:
             - containerPort: 8082

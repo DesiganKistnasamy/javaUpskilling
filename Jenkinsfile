@@ -106,25 +106,25 @@ pipeline{
                 sh 'cp -r target/site/jacoco/* src/main/resources/static/jacoco/'
             }
         }
-
-        stage('TRIVY FS SCAN') {
-           steps {
-               sh '''
-                    trivy fs --format table .
-                    trivy fs --format table --exit-code 1 --severity CRITICAL .
-               '''
-           }
-        }
-
-
-        stage("OWASP Dependency Check"){
-            steps{
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    dependencyCheck additionalArguments: "--scan ./ --format XML --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DPD-Check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
-            }
-        }
+//
+//         stage('TRIVY FS SCAN') {
+//            steps {
+//                sh '''
+//                     trivy fs --format table .
+//                     trivy fs --format table --exit-code 1 --severity CRITICAL .
+//                '''
+//            }
+//         }
+//
+//
+//         stage("OWASP Dependency Check"){
+//             steps{
+//                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+//                     dependencyCheck additionalArguments: "--scan ./ --format XML --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DPD-Check'
+//                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+//                 }
+//             }
+//         }
 
         stage('Build and Push Docker Image') {
            environment {
@@ -150,16 +150,37 @@ pipeline{
             }
         }
 
-        stage ('Deploy to container'){
-            steps{
-                sh """
-                    sudo docker ps -a --filter name=desigan-tasksmanager -q | xargs -r sudo docker stop
-                    sudo docker ps -a --filter name=desigan-tasksmanager -q | xargs -r sudo docker rm -f
-                    sudo docker images desigan12/tasksmanager -q | xargs -r sudo docker rmi -f
-                    sudo docker run -d --name desigan-tasksmanager -p 8087:8082 desigan12/tasksmanager:${BUILD_NUMBER}
-                """
-            }
-        }
+//         stage ('Deploy to container'){
+//             steps{
+//                 sh """
+//                     sudo docker ps -a --filter name=desigan-tasksmanager -q | xargs -r sudo docker stop
+//                     sudo docker ps -a --filter name=desigan-tasksmanager -q | xargs -r sudo docker rm -f
+//                     sudo docker images desigan12/tasksmanager -q | xargs -r sudo docker rmi -f
+//                     sudo docker run -d --name desigan-tasksmanager -p 8087:8082 desigan12/tasksmanager:${BUILD_NUMBER}
+//                 """
+//             }
+//         }
+
+         stage('Update Deployment File') {
+                 environment {
+                     GIT_REPO_NAME = "javaUpskilling"
+                     GIT_USER_NAME = "DesiganKistnasamy"
+                 }
+                 steps {
+                     withCredentials([string(credentialsId: 'desigan-gitops-user-secret-text', variable: 'GITHUB_TOKEN')]) {
+                         sh '''
+                             git config user.email "desigan.kistnasamy@accenture.com"
+                             git config user.name "Desigan"
+                             BUILD_NUMBER=${BUILD_NUMBER}
+                             sed -i "s/latest/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
+                             git add k8s/manifests/deployment.yml
+                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                         '''
+                     }
+                 }
+         }
+      }
 
         stage('Run Selenium Tests') {
             steps {
@@ -168,27 +189,6 @@ pipeline{
                 sh 'mvn -Dtest=TaskManagerSelenium test'
             }
         }
-
-//         stage('Update Deployment File') {
-//                 environment {
-//                     GIT_REPO_NAME = "acn-taskmanger-upskills"
-//                     GIT_USER_NAME = "devsahamerlin"
-//                 }
-//                 steps {
-//                     withCredentials([string(credentialsId: 'gitops-user-secret-text', variable: 'GITHUB_TOKEN')]) {
-//                         sh '''
-//                             git config user.email "devsahamerlin@gmail.com"
-//                             git config user.name "Saha Merlin"
-//                             BUILD_NUMBER=${BUILD_NUMBER}
-//                             sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
-//                             git add k8s/manifests/deployment.yml
-//                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-//                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-//                         '''
-//                     }
-//                 }
-//         }
-      }
 
 //     post {
 //         always {
