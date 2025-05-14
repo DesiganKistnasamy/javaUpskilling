@@ -198,4 +198,5 @@ pipeline{
 //             //echo 'Build failed due to HIGH or CRITICAL vulnerabilities found by Trivy.'
 //         }
 //     }
+    }
 }
