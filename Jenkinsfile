@@ -180,7 +180,6 @@ pipeline{
                      }
                  }
          }
-      }
 
         stage('Run Selenium Tests') {
             steps {
