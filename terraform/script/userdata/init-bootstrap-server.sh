@@ -18,7 +18,7 @@ sudo apt-get update
 sudo apt-get install docker.io -y
 sudo usermod -aG docker $USER
 newgrp docker
-sudo chmod 660 /var/run/docker.sock
+sudo chmod 775 /var/run/docker.sock
 sudo chown -R $USER:docker /var/run/docker.sock
 #sudo chmod 777 /var/run/docker.sock
 
